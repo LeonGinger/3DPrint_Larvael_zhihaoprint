@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>申请入住</title>
+		<link rel="stylesheet" type="text/css" href="/we-ui/css/weui.css"/>
+		<link rel="stylesheet" type="text/css" href="/we-ui/css/register.css"/>
+		<script type="text/javascript" src="/we-ui/js/zepto.min.js"></script>
+		<style>
+		</style>
+	</head>
+	<body>
+		<div class="bg">
+			<div class="title">申请入住</div>
+			<div class="main">
+			<form id="postForm" action="" method="post" enctype="multipart/form-data">
+					<div class="weui-cell">
+						<div class="weui-cell__hd"><label class="weui-label">企业名称</label></div>
+						<div class="weui-cell__bd">
+								<input class="weui-input" type="text" placeholder="请输入企业名称" name='compname' id='compname'/>
+						</div>
+					</div>
+					<div class="weui-cell">
+						<div class="weui-cell__hd"><label class="weui-label">所属行业</label></div>
+						<div class="weui-cell__bd">
+							<select class="weui-select" name="hangye">
+							@foreach ($data['hangye'] as $item)
+								 
+									<option @if ($loop->first) selected="" @endif value=" {{ $item->id }}">{{ $item->name }}</option>
+							@endforeach
+							</select>
+						</div>
+					</div>
+					<div class="weui-cell">
+						<div class="weui-cell__hd"><label class="weui-label">联系人名称</label></div>
+						<div class="weui-cell__bd">
+								<input class="weui-input" type="text" placeholder="请输联系人姓名" name='user' id='user'/>
+						</div>
+					</div>
+					<div class="weui-cell">
+						<div class="weui-cell__hd">
+							<label class="weui-label">手机号</label>
+						</div>
+						<div class="weui-cell__bd">
+							<input class="weui-input" type="tel" placeholder="请输入手机号" name='phone' id='mphone'/>
+						</div>
+						
+					</div>
+					<div class="weui-cell">
+						<div class="weui-cell__hd"><label class="weui-label" >密码</label></div>
+						<div class="weui-cell__bd">
+								<input class="weui-input" type="password" placeholder="请输入密码" onkeyup="value=value.replace(/[\u4e00-\u9fa5]/ig,'')" name="password" id="password" / >
+						</div>
+					</div>
+					<div class="weui-cell">
+						<div class="weui-cell__hd"><label class="weui-label">重复密码</label></div>
+						<div class="weui-cell__bd">
+								<input class="weui-input" type="password" placeholder="请输入重密码" onkeyup="value=value.replace(/[\u4e00-\u9fa5]/ig,'')" id="rpassword"/>
+						</div>
+					</div>
+					<input type="hidden" name='openid' value='{{ $data['user']['id'] }}'/>
+					</form>
+				</div>
+					 <div class="button-box"> <input type="button" name="" value="注册" class="button" id='submit'  /> </div>
+			 </div>
+
+		 
+		     <div class="js_dialog" id="iosDialog1" style="display: none;">
+		     <div class="weui-mask"></div>
+		     <div class="weui-dialog">
+		     	<div class="weui-dialog__bd">提交成功，请等待审核！</div>
+		     	<div class="weui-dialog__ft">
+		     		<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" id='dialogsFalse1'>知道了</a>
+		     	</div>
+		     </div>
+		     </div>
+		 
+         <div class="js_dialog" id="iosDialog2" style="display: none;">
+         	<div class="weui-mask"></div>
+         	<div class="weui-dialog">
+         		<div class="weui-dialog__bd" id="tips">密码和重复密码不一致</div>
+         		<div class="weui-dialog__ft">
+         			<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" id='dialogsFalse2'>知道了</a>
+         		</div>
+         	</div>
+         </div>
+				<script src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js" type="text/javascript" charset="utf-8"></script>
+		 <script type="text/javascript" charset="utf-8">
+    wx.config(@json($data['jssdk']));
+	$('#dialogsFalse1').click(function(){
+		wx.closeWindow();
+	});
+</script>
+				<script type="text/javascript">
+					 $(function(){
+						 let $iosDialog1 = $('#iosDialog1');
+						 let $iosDialog2 = $('#iosDialog2');
+						 $('#mphone').blur(function(){
+							 let mphone=$('#mphone').val();
+							  if(!(/^1[34578]\d{9}$/.test(mphone))){ 
+                     $iosDialog2.fadeIn(200);
+                     $('#tips').html('请输入正确的手机号码');return false;
+                   }
+						 })
+						  $('#submit').click(function(){
+								let password=$('#password').val();
+								let rpassword=$('#rpassword').val();
+								let user=$('#user').val();
+								let compname=$('#compname').val();
+								console.log(password,rpassword)
+								if(password==rpassword){
+								  if(user&&compname&&password&&rpassword){
+$.ajax({
+  type: 'GET',
+  url: '/wechat/register',
+  // data to be added to query string:
+  data: $( '#postForm').serialize(),
+  // type of data we are expecting in return:
+  dataType: 'json',
+  contentType: 'application/json',
+  success: function(data){
+    $iosDialog1.fadeIn(200);
+  },
+  error: function(xhr){
+	 $iosDialog1.fadeIn(200);
+    //$('#tips').html('手机号码重复，请重新输入');
+  }
+});
+									}else{
+										$('#tips').html('请将注册信息填写完')
+										$iosDialog2.fadeIn(200);return false;
+									}
+									
+								}else{
+									$iosDialog2.fadeIn(200);
+									$('#tips').html('密码和重复密码不一致')
+								}
+							})
+
+					          $('#dialogsFalse2').click(function(){
+					          	$iosDialog2.fadeOut(200);
+					          	
+					          })
+									
+					
+									
+							});
+				</script>
+	</body>
+</html>

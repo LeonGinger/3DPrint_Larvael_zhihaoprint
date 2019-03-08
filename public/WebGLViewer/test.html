@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="author">
+
+    <meta name="description" content="">
+
+    <title>文件上传测试</title>
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+</head>
+<body>
+
+	 <input type="file" name="upfile" id="upfile"/>
+     <input id="uploadBtn" type="submit" value="开始上传" />
+	<script>
+	var url = "https://yp-dev.one2fit.cn/api/sales/order/upload";
+
+    $('#uploadBtn').on('click', function(){
+			$("body").append("<b id='onloa'>正在上传，请勿关闭页面。</b>");
+      var fd = new FormData();
+            fd.append("paragram", 12345); //上传的参数名 参数值 k-v键值对
+            fd.append("meinv", $("#upfile").get(0).files[0]);//上传的文件file
+            $.ajax({
+                 url: url,
+                 type: "POST",
+                 processData: false,
+                 contentType: false,
+                 data: fd,
+                 success: function(data) {
+				 $("#onloa").hide();
+                   window.open("https://yp-dev.one2fit.cn/WebGLViewer/STL.html?modelName="+data, 'new', 'height=600, width=800, top=100, left=100, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no'); console.log(data);
+                 }
+            })
+    })
+	</script>
+</body>
+</html>
